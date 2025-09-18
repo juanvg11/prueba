@@ -10,14 +10,26 @@ import com.metaenlace.prueba.model.Paciente;
 import com.metaenlace.prueba.model.Medico;
 import com.metaenlace.prueba.model.Diagnostico;
 import com.metaenlace.prueba.repository.CitaRepository;
+import com.metaenlace.prueba.repository.PacienteRepository;
+import com.metaenlace.prueba.repository.MedicoRepository;
+import com.metaenlace.prueba.repository.DiagnosticoRepository;
 import com.metaenlace.prueba.dto.CitaDTO;
 
 @Service
 public class CitaService {
     private final CitaRepository repo;
+    private final PacienteRepository pacienteRepo;
+    private final MedicoRepository medicoRepo;
+    private final DiagnosticoRepository diagnosticoRepo;
 
-    public CitaService(CitaRepository repo) {
+    public CitaService(CitaRepository repo,
+                       PacienteRepository pacienteRepo,
+                       MedicoRepository medicoRepo,
+                       DiagnosticoRepository diagnosticoRepo) {
         this.repo = repo;
+        this.pacienteRepo = pacienteRepo;
+        this.medicoRepo = medicoRepo;
+        this.diagnosticoRepo = diagnosticoRepo;
     }
 
     // =====================
@@ -51,18 +63,18 @@ public class CitaService {
         cita.setAttribute11(dto.getAttribute11());
 
         if (dto.getPacienteId() != null) {
-            Paciente paciente = new Paciente();
-            paciente.setId(dto.getPacienteId());
+            Paciente paciente = pacienteRepo.findById(dto.getPacienteId())
+                    .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
             cita.setPaciente(paciente);
         }
         if (dto.getMedicoId() != null) {
-            Medico medico = new Medico();
-            medico.setId(dto.getMedicoId());
+            Medico medico = medicoRepo.findById(dto.getMedicoId())
+                    .orElseThrow(() -> new RuntimeException("Médico no encontrado"));
             cita.setMedico(medico);
         }
         if (dto.getDiagnosticoId() != null) {
-            Diagnostico diagnostico = new Diagnostico();
-            diagnostico.setId(dto.getDiagnosticoId());
+            Diagnostico diagnostico = diagnosticoRepo.findById(dto.getDiagnosticoId())
+                    .orElseThrow(() -> new RuntimeException("Diagnóstico no encontrado"));
             cita.setDiagnostico(diagnostico);
         }
 
